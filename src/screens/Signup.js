@@ -1,34 +1,61 @@
-import React from 'react';
-import { StyleSheet, View, TextInput, Text, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, Text, TouchableOpacity } from 'react-native';
 import LoginButton from '../ui/components/buttons/LoginButton';
 import { MaterialIcons } from '@expo/vector-icons';
+import { styles } from '../ui/css/Signup';
+import axios from 'axios';
 
 export default function Signup({ navigation }) {
+
+  const IP = '192.168.0.110'
+  const PORT = '3001'
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  async function SignUp() {
+    const data = {
+        name: name,
+        email: email,
+        password: password
+    };
+    await axios.post(`http://${IP}:${PORT}/user`, data)
+        .then(res => {
+            alert('Conta criada com sucesso!');
+            navigation.navigate("Login");
+        })
+        .catch(err => {
+            console.log(err);
+            alert('Erro ao cadastrar');
+        });
+}
+
   return (
     <View style={styles.container}>
       <View style={styles.login}>
         <MaterialIcons style={styles.logo} name="device-hub" size={50} color="black" />
         <Text style={styles.textLogo}>DevBook</Text>
         <View style={styles.manualLogin}>
-          <TextInput
+        <TextInput
             placeholder='Name'
             style={styles.input}
+            value={name}
+            onChangeText={setName}
           />
           <TextInput
             placeholder='Email'
             style={styles.input}
+            value={email}
+            onChangeText={setEmail}
           />
           <TextInput
             placeholder='Password'
             style={styles.input}
+            value={password}
+            onChangeText={setPassword}
             secureTextEntry={true}
           />
-          <TextInput
-            placeholder='Confirm Password'
-            style={styles.input}
-            secureTextEntry={true}
-          />
-          <LoginButton value='Signup' onPress={() => navigation.navigate('Feed')} />
+          <LoginButton value='Signup' onPress={SignUp} />
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
           <Text style={styles.loginText}>Already have an account? Log in</Text>
@@ -37,62 +64,3 @@ export default function Signup({ navigation }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#4b0081',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  login: {
-    backgroundColor: '#fff',
-    width: 300,
-    height: 550,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  input: {
-    height: 40,
-    margin: 10,
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 10,
-  },
-  separate: {
-    height: 1,
-    margin: 10,
-    width: '80%',
-    backgroundColor: '#000',
-    alignSelf: 'center',
-  },
-  textInput: {
-    alignSelf: 'center',
-    margin: 10,
-  },
-  buttonGroup: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  logo: {
-    alignSelf: 'center',
-    margin: 10,
-  },
-  textLogo: {
-    alignSelf: 'center',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  loginText: {
-    alignSelf: 'center',
-    marginTop: 10,
-    color: '#0000FF',
-  },
-});
